@@ -1,0 +1,314 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Numerics;
+using UnityEditor.AnimatedValues;
+using UnityEngine;
+using Quaternion = UnityEngine.Quaternion;
+using Vector3 = UnityEngine.Vector3;
+using UnityEngine.AI;
+
+public class IKSnap : MonoBehaviour
+{
+
+    public bool useIK;
+    public bool overwriteUseIKHand;
+    public bool leftHandIK;
+    public bool rightHandIK;
+
+
+    public bool leftFootIK;
+    public bool rightFootIK;
+
+    public Vector3 leftHandPos;
+    public Vector3 rightHandPos;
+
+    public Vector3 leftFootPos;
+    public Vector3 rightFootPos;
+
+    public Vector3 leftFootOffset;
+    public Vector3 rightFootOffset;
+
+    public Vector3 leftHandFixDown;
+    public Vector3 rightHandFixDown;
+
+    public Quaternion leftHandRot;
+    public Quaternion rightHandRot;
+
+    public float speedRotate = 1.0f;
+
+    public bool isRotated;
+
+    public Collider coll;
+
+    private Animator anim;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        overwriteUseIKHand = false;
+        anim = GetComponent<Animator>();
+    }
+
+
+    //UNUSED -> maybe in future? export into function
+    public RaycastHit checkHandsObject()
+    {
+        RaycastHit CheckRHit;
+        if (Physics.Raycast(
+            transform.position + Vector3.Scale(transform.up, new Vector3(0.0f, 2.0f, 0.5f)) +
+            Vector3.Scale(transform.forward, new Vector3(0.45f, 0f, 0.45f)),
+            -transform.up + Vector3.Scale(transform.right, new Vector3(0.25f, 0.0f, 0.25f)) +
+            Vector3.Scale(transform.forward, new Vector3(0.15f, 0f, 0.15f)), out CheckRHit,
+            0.5f))
+        {
+            return CheckRHit;
+        }
+
+        RaycastHit CheckLHit;
+        if (Physics.Raycast(
+            transform.position + Vector3.Scale(transform.up, new Vector3(0.0f, 2.0f, 0.5f)) +
+            Vector3.Scale(transform.forward, new Vector3(0.45f, 0f, 0.45f)),
+            -transform.up + Vector3.Scale(-transform.right, new Vector3(0.25f, 0.0f, 0.25f)) +
+            Vector3.Scale(transform.forward, new Vector3(0.15f, 0f, 0.15f)), out CheckLHit,
+            0.5f))
+        {
+            return CheckLHit;
+        }
+
+        Debug.Log("Error in line 76: Please fix this with a check! I don't think this should happen!");
+        return new RaycastHit();
+    }
+
+    public bool boolHandsObject()
+    {
+        RaycastHit CheckRHit;
+        if (Physics.Raycast(
+            transform.position + Vector3.Scale(transform.up, new Vector3(0.0f, 2.0f, 0.5f)) +
+            Vector3.Scale(transform.forward, new Vector3(0.45f, 0f, 0.45f)),
+            -transform.up + Vector3.Scale(transform.right, new Vector3(0.25f, 0.0f, 0.25f)) +
+            Vector3.Scale(transform.forward, new Vector3(0.15f, 0f, 0.15f)), out CheckRHit,
+            0.5f))
+        {
+            return true;
+        }
+
+        RaycastHit CheckLHit;
+        if (Physics.Raycast(
+            transform.position + Vector3.Scale(transform.up, new Vector3(0.0f, 2.0f, 0.5f)) +
+            Vector3.Scale(transform.forward, new Vector3(0.45f, 0f, 0.45f)),
+            -transform.up + Vector3.Scale(-transform.right, new Vector3(0.25f, 0.0f, 0.25f)) +
+            Vector3.Scale(transform.forward, new Vector3(0.15f, 0f, 0.15f)), out CheckLHit,
+            0.5f))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    void FixedUpdate()
+    {
+
+        RaycastHit LHit;
+        RaycastHit RHit;
+
+        RaycastHit LFHit;
+        RaycastHit RFHit;
+
+        //get Foot Hit for Position Offset Hand -> Is Hand muss foot TODO IMPORTANT
+        RaycastHit CheckRHit;
+        Physics.Raycast(transform.position + Vector3.Scale(transform.up, new Vector3(0.0f, 2.0f, 0.5f)) + Vector3.Scale(transform.forward, new Vector3(0.45f, 0f, 0.45f)), -transform.up + Vector3.Scale(transform.right, new Vector3(0.25f, 0.0f, 0.25f)) + Vector3.Scale(transform.forward, new Vector3(0.15f, 0f, 0.15f)), out CheckRHit,
+            0.5f);
+        RaycastHit CheckLHit;
+        Physics.Raycast(transform.position + Vector3.Scale(transform.up, new Vector3(0.0f, 2.0f, 0.5f)) + Vector3.Scale(transform.forward, new Vector3(0.45f, 0f, 0.45f)), -transform.up + Vector3.Scale(-transform.right, new Vector3(0.25f, 0.0f, 0.25f)) + Vector3.Scale(transform.forward, new Vector3(0.15f, 0f, 0.15f)), out CheckLHit,
+            0.5f);
+
+        if (isRotated == false)
+        {
+            if (overwriteUseIKHand || useIK)
+            {
+                Transform target;
+                RaycastHit towardsHit = checkHandsObject();
+                target = towardsHit.transform.gameObject.transform;
+                isRotated = true;
+
+                Vector3 targetDirection = target.position - transform.position;
+                targetDirection.y = target.position.y;
+                Vector3 newDirection = Vector3.RotateTowards(transform.forward, targetDirection, speedRotate, 0.0f);
+                transform.rotation = Quaternion.LookRotation(newDirection);
+            }
+        }
+
+
+
+        //Left
+        //check hits, save in LHit if hit
+        if (Physics.Raycast(transform.position + Vector3.Scale(transform.up, new Vector3(0.0f, 2.0f, 0.5f)) + Vector3.Scale(transform.forward, new Vector3(0.45f, 0f, 0.45f)), -transform.up + Vector3.Scale(-transform.right, new Vector3(0.25f, 0.0f, 0.25f)) + Vector3.Scale(transform.forward, new Vector3(0.15f, 0f, 0.15f)), out LHit,
+            0.5f))
+        {
+
+                //Maybe use bounds?
+                //->not working?
+                //coll = LHit.collider;
+                //Vector3 closestPoint = coll.ClosestPointOnBounds(LHit.point);
+
+                leftHandIK = true;
+                leftHandPos = LHit.point - leftHandFixDown;
+                //use hitting ray if either hits -> place hands on foot level -> At collider
+                if (CheckLHit.collider)
+                {
+                    leftHandPos[2] = CheckLHit.point[2];
+                }
+                else
+                {
+                    leftHandPos[2] = CheckRHit.point[2];
+                }
+
+                leftHandRot = Quaternion.FromToRotation(Vector3.forward, LHit.normal);
+
+        }
+        else
+        {
+            leftHandIK = false;
+        }
+
+        //Same for right
+        if (Physics.Raycast(transform.position + Vector3.Scale(transform.up, new Vector3(0.0f, 2.0f, 0.5f)) + Vector3.Scale(transform.forward, new Vector3(0.45f, 0f, 0.45f)), -transform.up + Vector3.Scale(transform.right, new Vector3(0.25f, 0.0f, 0.25f)) + Vector3.Scale(transform.forward, new Vector3(0.15f, 0f, 0.15f)), out RHit,
+            0.5f))
+        {
+
+                rightHandIK = true;
+                rightHandPos = RHit.point - rightHandFixDown;
+                if (CheckLHit.collider)
+                {
+                    rightHandPos[2] = CheckLHit.point[2];
+                }
+                else
+                {
+                    rightHandPos[2] = CheckRHit.point[2];
+                }
+
+                rightHandRot = Quaternion.FromToRotation(Vector3.forward, RHit.normal);
+
+            
+        }
+        else
+        {
+            rightHandIK = false;
+        }
+
+        if (leftHandIK) //check if Hands can grab -> only then move foot
+        {
+            //LeftFoot
+            if (Physics.Raycast(transform.position + Vector3.Scale(-transform.right, new Vector3(0.8f, 0.8f, 0.8f)), transform.forward, out LFHit,
+                0.5f))
+            {
+                leftFootIK = true;
+                leftFootPos = LFHit.point - leftFootOffset;
+            }
+            else
+            {
+                leftFootIK = false;
+            }
+        }
+        else
+        {
+            leftFootIK = false;
+        }
+
+        if (rightHandIK)
+        {
+            //RightFoot
+            if (Physics.Raycast(transform.position + Vector3.Scale(transform.right, new Vector3(0.8f, 0.8f, 0.8f)), transform.forward, out LFHit, 0.5f))
+            {
+                rightFootIK = true;
+                rightFootPos = LFHit.point - rightFootOffset;
+            }
+            else
+            {
+                rightFootIK = false;
+            }
+        }
+        else
+        {
+            rightFootIK = false;
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        //left - then right foot
+        Debug.DrawRay(transform.position + Vector3.Scale(-transform.right, new Vector3(0.8f, 0.8f, 0.8f)) , transform.forward, Color.green);
+        Debug.DrawRay(transform.position + Vector3.Scale(transform.right, new Vector3(0.8f, 0.8f, 0.8f)), transform.forward, Color.green);
+
+        Debug.DrawRay(transform.position + Vector3.Scale(transform.up, new Vector3(0.3f, 0.3f, 0.3f)), -transform.up, Color.blue);
+        Debug.DrawRay(transform.position + Vector3.Scale(transform.up, new Vector3(0.3f, 0.3f, 0.3f)), -transform.up, Color.blue);
+
+        //left hand
+        Debug.DrawRay(transform.position + Vector3.Scale(transform.up, new Vector3(0.0f, 2.0f, 0.5f)) + Vector3.Scale(transform.forward, new Vector3(0.45f, 0f, 0.45f)),
+            -transform.up + Vector3.Scale(-transform.right, new Vector3(0.25f, 0.0f, 0.25f)) + Vector3.Scale(transform.forward, new Vector3(0.15f, 0f, 0.15f)), Color.red);
+        //right hand
+        Debug.DrawRay(transform.position + Vector3.Scale(transform.up, new Vector3(0.0f, 2.0f, 0.5f)) + Vector3.Scale(transform.forward, new Vector3(0.45f, 0f, 0.45f)),
+            -transform.up + Vector3.Scale(transform.right, new Vector3(0.25f, 0.0f, 0.25f)) + Vector3.Scale(transform.forward, new Vector3(0.15f, 0f, 0.15f)), Color.red);
+
+    }
+
+    void OnAnimatorIK()
+    {
+        if (overwriteUseIKHand)
+        {
+            setHandsPos();
+        }
+
+        if (useIK)
+        {
+            setHandsPos();
+
+            if (leftFootIK)
+            {
+                anim.SetIKPosition(AvatarIKGoal.LeftFoot, leftFootPos);
+                anim.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 1f);
+            }
+
+
+            if (rightFootIK)
+            {
+                anim.SetIKPosition(AvatarIKGoal.RightFoot, rightFootPos);
+                anim.SetIKPositionWeight(AvatarIKGoal.RightFoot, 1f);
+            }
+        }
+    }
+
+    void setHandsPos()
+    {
+        if (leftHandIK)
+        {
+            //TODO: Possibly smoothen with Lerp or anything else
+            anim.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1f);
+            anim.SetIKPosition(AvatarIKGoal.LeftHand, leftHandPos);
+            anim.SetIKRotation(AvatarIKGoal.LeftHand, leftHandRot);
+            anim.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1f);
+        }
+        if (rightHandIK)
+        {
+            anim.SetIKPositionWeight(AvatarIKGoal.RightHand, 1f);
+            anim.SetIKPosition(AvatarIKGoal.RightHand, rightHandPos);
+            anim.SetIKRotation(AvatarIKGoal.RightHand, rightHandRot);
+            anim.SetIKRotationWeight(AvatarIKGoal.RightHand, 1f);
+        }
+    }
+
+
+    void DrawCircle(Vector3 center, float radius, Color color)
+    {
+        Vector3 prevPos = center + new Vector3(radius, 0, 0);
+        for (int i = 0; i < 30; i++)
+        {
+            float angle = (float)(i + 1) / 30.0f * Mathf.PI * 2.0f;
+            Vector3 newPos = center + new Vector3(Mathf.Cos(angle) * radius, 0, Mathf.Sin(angle) * radius);
+            Debug.DrawLine(prevPos, newPos, color);
+            prevPos = newPos;
+        }
+    }
+}
