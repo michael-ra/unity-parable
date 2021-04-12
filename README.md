@@ -7,15 +7,15 @@ The animations and movement was complexter than we throught it would be (animati
 <br><br>
 
 <h2>2d controls / BoulderDash</h2>
-**Arrow keys to move**
+Arrow keys to move
 
 <h2>3d controls / runner</h2>
 While BoulderDash should be self-explaining, it might not be the case for the 3d-runner game. <br> Here you currently can: <br>
-**W** to **walk** <br>
-**W+Shift** to **run** <br>
-**Space to jump** (only when not running or walking) <br>
-**Space** in front of a climbable wall **will grab onto  the wall <br>
-**Space** while grabbed onto a wall **will pull you ontop the wall** <br>
+W to walk <br>
+W+Shift to run <br>
+Space to jump (only when not running or walking) <br>
+Space in front of a climbable wall will grab onto  the wall <br>
+Space while grabbed onto a wall will pull you ontop the wall <br>
 (more to be implemented) <br>
 <br>
 
