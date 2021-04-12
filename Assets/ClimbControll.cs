@@ -35,17 +35,23 @@ public class ClimbControll : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                //depending on if on ground
-                if (!Physics.Raycast(transform.position + new Vector3(0f, +0.3f, 0.0f), -transform.up, out BHit,
-                    1f))
+                if (!Physics.Raycast(
+                    transform.position + Vector3.Scale(transform.up, new Vector3(0.0f, 2.0f, 0.5f)) +
+                    Vector3.Scale(transform.forward, new Vector3(0.45f, 0f, 0.45f)),
+                    transform.forward, 1f))
                 {
-                    SnapInstance.useIK = true;
-                    SnapInstance.overwriteUseIKHand = false;
-                }
-                else
-                {
-                    SnapInstance.useIK = false;
-                    SnapInstance.overwriteUseIKHand = true;
+                    //depending on if on ground
+                    if (!Physics.Raycast(transform.position + new Vector3(0f, +0.3f, 0.0f), -transform.up, out BHit,
+                        1f))
+                    {
+                        SnapInstance.useIK = true;
+                        SnapInstance.overwriteUseIKHand = false;
+                    }
+                    else
+                    {
+                        SnapInstance.useIK = false;
+                        SnapInstance.overwriteUseIKHand = true;
+                    }
                 }
             }
         }
@@ -54,14 +60,20 @@ public class ClimbControll : MonoBehaviour
         //priority 1 else will climb without hang first
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (isHanging && MovementInstance.canMove)
+            if (!Physics.Raycast(
+                transform.position + Vector3.Scale(transform.up, new Vector3(0.0f, 2.0f, 0.5f)) +
+                Vector3.Scale(transform.forward, new Vector3(0.45f, 0f, 0.45f)),
+                transform.forward, 1f))
             {
-                isHanging = false;
-                SnapInstance.useIK = false;
-                SnapInstance.overwriteUseIKHand = true;
-                //transform forward TODO
-                MovementInstance.canMove = false;
-                anim.Play("Climbing");
+                if (isHanging && MovementInstance.canMove)
+                {
+                    isHanging = false;
+                    SnapInstance.useIK = false;
+                    SnapInstance.overwriteUseIKHand = true;
+                    //transform forward TODO
+                    MovementInstance.canMove = false;
+                    anim.Play("Climbing");
+                }
             }
         }
 
