@@ -1,0 +1,86 @@
+behaviors:
+  Chaser:
+    trainer_type: sac
+    summary_freq: 50000
+    # num env steps before adding to replay buffer, value estimates 
+    # used for unfinished episodes, useful for bias variance tradeoff
+    time_horizon: 160
+    # num env steps
+    max_steps: 1000000
+    keep_checkpoints: 5
+    checkpoint_interval: 50000
+    threaded: true
+    
+    hyperparameters:
+      learning_rate: 3e-4
+      batch_size: 256
+      buffer_size: 200000
+      learning_rate_schedule: linear
+      ## PPO specific ##
+      # entropy regularization coef
+      #beta: 5e-3
+      # KL divergence range
+      #epsilon: 0.2
+      # bias variance tradeoff in GAE
+      #lambd: 0.95
+      #num_epoch: 3
+      buffer_init_steps: 5000
+      tau: 0.005
+      steps_per_update: 10.0
+      save_replay_buffer: false
+      init_entcoef: 0.5
+      reward_signal_steps_per_update: 10.0
+    
+    network_settings:
+      hidden_units: 128
+      num_layers: 2
+      vis_encode_type: simple
+    
+    reward_signals:
+      extrinsic:
+        # reward scale factor
+        strength: 1.0
+        gamma: 0.99
+
+environment_parameters:
+  runner_brain_type:
+    curriculum:
+      - name: LessonOne
+        completion_criteria:
+          behavior: Chaser
+          measure: progress
+          threshold: 0.1
+          min_lesson_length: 10
+        value: 0.0
+      - name: LessonTwo
+        value: 1.0
+  agent_target_distance:
+    curriculum:
+      - name: LessonOne
+        completion_criteria:
+          behavior: Chaser
+          measure: progress
+          threshold: 0.2
+          min_lesson_length: 10
+        value: 2.0
+      - name: LessonTwo
+        completion_criteria:
+          behavior: Chaser
+          measure: progress
+          threshold: 0.4
+          min_lesson_length: 10
+        value: 4.0
+      - name: LessonThree
+        completion_criteria:
+          behavior: Chaser
+          measure: progress
+          threshold: 0.6
+          min_lesson_length: 10
+        value: 8.0
+      - name: LessonFour
+        value: 16.0
+  num_pillars: 4.0
+  num_platforms: 0.0
+
+
+

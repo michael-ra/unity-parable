@@ -1,0 +1,103 @@
+behaviors:
+  ParkourAgent:
+    trainer_type: poca
+    summary_freq: 10000
+    # num env steps before adding to replay buffer, value estimates 
+    # used for unfinished episodes, useful for bias variance tradeoff
+    time_horizon: 1000
+    # num env steps
+    max_steps: 10000000
+    keep_checkpoints: 5
+    checkpoint_interval: 100000
+    threaded: true
+    
+    hyperparameters:
+      learning_rate: 3e-4
+      batch_size: 2048
+      buffer_size: 20480
+      learning_rate_schedule: linear
+      ## PPO specific ##
+      # entropy regularization coef
+      beta: 5e-3
+      # KL divergence range
+      epsilon: 0.2
+      # bias variance tradeoff in GAE
+      lambd: 0.95
+      num_epoch: 3
+    
+    network_settings:
+      hidden_units: 256
+      num_layers: 2
+      vis_encode_type: simple
+    
+    reward_signals:
+      extrinsic:
+        # reward scale factor
+        strength: 1.0
+        gamma: 0.99
+    self_play:
+      save_steps: 50000
+      team_change: 200000
+      swap_steps: 2000
+      window: 10
+      play_against_latest_model_ratio: 0.5
+      initial_elo: 1200.0
+
+environment_parameters:
+  runner_brain_type:
+    curriculum:
+      - name: LessonOne
+        completion_criteria:
+          behavior: ParkourAgent
+          measure: progress
+          threshold: 0.01
+          min_lesson_length: 10
+        value: 0.0
+      - name: LessonTwo
+        completion_criteria:
+          behavior: ParkourAgent
+          measure: progress
+          threshold: 0.02
+          min_lesson_length: 10
+        value: 1.0
+      - name: LessonThree
+        value: 2.0
+  num_walls:
+    curriculum:
+      - name: LessonOne
+        completion_criteria:
+          behavior: ParkourAgent
+          measure: progress
+          threshold: 0.5
+          min_lesson_length: 100
+        value: 0.0
+      - name: LessonTwo
+        completion_criteria:
+          behavior: ParkourAgent
+          measure: progress
+          threshold: 0.75
+          min_lesson_length: 100
+        value: 2.0
+      - name: LessonThree
+        value: 2.0
+  num_platforms:
+    curriculum:
+      - name: LessonOne
+        completion_criteria:
+          behavior: ParkourAgent
+          measure: progress
+          threshold: 0.5
+          min_lesson_length: 100
+        value: 1.0
+      - name: LessonTwo
+        completion_criteria:
+          behavior: ParkourAgent
+          measure: progress
+          threshold: 0.75
+          min_lesson_length: 100
+        value: 2.0
+      - name: LessonThree
+        value: 4.0
+
+
+
