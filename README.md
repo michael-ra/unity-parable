@@ -37,4 +37,4 @@ Space while grabbed onto a wall will pull you ontop the wall <br>
 <br>
 We plan to publish both projects in the future. But we have to review all licenses of the major 3rd party images & fonts used (i.e. images for Parable code / BoulderMiner) so that we don't violate any and if we would, replace them with other assets.
 <br>
-aaand most important: Theres also a hidden Macarena Dance animation!
+aaand most important: Theres also a hidden Macarena Dance animation! Or is there?
