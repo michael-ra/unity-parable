@@ -7,7 +7,7 @@ The first branch "parable-code" contains our adaptation of BoulderDash. In this 
 
 <br><br>![Boulderminer example gif](https://github.com/michael-ra/unity-parable/blob/main/boulderminer.gif)<br><br>
 
-<h3>Parable chaser</h3>
+<h3>Parable chaser (WIP)</h3>
 
 We sadly overestimated the size of the project and couldn't finish our second part of the project - a 3d styled game where you have to utilize movements to overcome objects and get away from a chaser. 
 
