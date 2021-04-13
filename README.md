@@ -27,7 +27,7 @@ The animations and movement were more complex than we throught (animation timing
 <h2>2d controls / BoulderDash</h2>
 Arrow keys to move
 
-<h2>3d controls / runner</h2>
+<h2>3d controls / Runner</h2>
 While BoulderDash should be self-explaining, it might not be the case for the 3d-runner game. <br> Here you currently can: <br>
 W to walk <br>
 W+Shift to run <br>
