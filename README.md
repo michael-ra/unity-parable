@@ -36,7 +36,7 @@ Space in front of a climbable wall will grab onto the wall <br>
 Space while grabbed onto a wall will pull you ontop the wall <br>
 (more to be implemented) <br>
 <br>
-<br>
+
 
 # Video
 
