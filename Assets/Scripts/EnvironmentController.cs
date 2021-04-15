@@ -42,6 +42,7 @@ public class EnvironmentController : MonoBehaviour
     void Start()
     {
         // Init Academy
+        Vector3 hello = new Vector3(1f, 1f, 1f);
         resetParams = Academy.Instance.EnvironmentParameters;
 
         // Init agent group
@@ -135,9 +136,11 @@ public class EnvironmentController : MonoBehaviour
 
         // Reset agents
         agentTargetDistance = resetParams.GetWithDefault("agent_target_distance", 4f);
+        int index = 0;
         foreach (var item in AgentList)
         {
-            ResetAgent(item);
+            ResetAgent(item, index);
+            index++;
         }
         
         if (resetObstaclesOnEpisodeBegin || setup)
@@ -208,13 +211,12 @@ public class EnvironmentController : MonoBehaviour
     }
 
     // Reset given agent
-    public void ResetAgent(ParkourAgent agent)
+    public void ResetAgent(ParkourAgent agent, int index = 0)
     {
         // Reset velocity
         agent.rBody.angularVelocity = Vector3.zero;
         agent.rBody.velocity = Vector3.zero;
         // Respawn chaser in spawn volume
-        var index = Random.Range(0, agentSpawnRegions.Count);
         var curRegion = agentSpawnRegions[index];
         var curBounds = agentSpawnRegionBounds[index];
         if (agent.team is ParkourAgent.Team.Chaser)

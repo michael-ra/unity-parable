@@ -17,7 +17,10 @@ public class YbotAgent : MonoBehaviour
         Runner
     }
     public Transform target;
-    public EnvironmentController envController;
+    [SerializeField]
+    private EnvironmentController envController;
+    [SerializeField]
+    private UIManager _uiManager;
     public Team team;
     [HideInInspector]
     public Collider agentCollider;
@@ -25,6 +28,8 @@ public class YbotAgent : MonoBehaviour
     public Rigidbody rBody;
     private int lives;
     Vector3 initialPosition;
+    Movement playerMovement;
+    Animator anim;
 
     // Start is called before the first frame update
     public void Start()
@@ -35,6 +40,8 @@ public class YbotAgent : MonoBehaviour
         rBody = this.GetComponentInChildren<Rigidbody>();
         lives = 100;
         initialPosition = this.transform.position;
+        playerMovement = GetComponent<Movement>();
+        anim = GetComponent<Animator>();
 
     }
 
@@ -46,6 +53,8 @@ public class YbotAgent : MonoBehaviour
             this.rBody.angularVelocity = Vector3.zero;
             this.transform.position = initialPosition;
             lives = 100;
+            _uiManager.UpdateHP(lives);
+
         }
     }
 
@@ -54,8 +63,21 @@ public class YbotAgent : MonoBehaviour
         if (collision.gameObject.CompareTag("chaser"))
         {
             lives-= 10;
+            _uiManager.UpdateHP(lives);
             Debug.Log(lives);
         }
+    }
+    void OnTriggerEnter(Collider other)
+    {
+        if (team == Team.Runner)
+        {
+            if (other.gameObject.CompareTag("goal"))
+            {
+                anim.Play("Macarena Dance");
+                playerMovement.canMove = false;
+            }
+        }
+            
     }
     void OnTriggerStay(Collider other)
     {
@@ -63,13 +85,10 @@ public class YbotAgent : MonoBehaviour
         // but is not allowed to touch lava
         if (team == Team.Runner)
         {
-            if (other.gameObject.CompareTag("goal"))
-            {
-                Debug.Log("GOAL");
-            }
             if (other.gameObject.CompareTag("lava"))
             {
                 lives--;
+                _uiManager.UpdateHP(lives);
                 Debug.Log(lives);
             }
         }
