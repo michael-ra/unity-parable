@@ -2,6 +2,10 @@
 This is our project submission for the Introduction to Unity course in 2021.<br>
 You can find the project in two relevant branches.
 
+# Video
+
+[Short video explaining and showing our game](https://www.youtube.com/watch?v=iH5Ssg3ZdGY)
+
 <h3>Parable code</h3>
 The first branch "parable-code" contains our adaptation of BoulderDash. In this game you have to collect all 12 gems on the map and avoid enemies to get a secret code.<br> It was planned that you would need this code to unlock the 3d levels of the game - kind of progressing from 2d to 3d.
 
@@ -37,10 +41,6 @@ Space while grabbed onto a wall will pull you ontop the wall <br>
 (more to be implemented) <br>
 <br>
 
-
-# Video
-
-[Short video explaining and showing our game](https://www.youtube.com/watch?v=iH5Ssg3ZdGY)
 
 # Misc
 
